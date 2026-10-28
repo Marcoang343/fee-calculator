@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whatnot &amp; eBay Fee + Profit Calculator | Marco Angelo</title>
+<style>
+:root{--navy:#17233A;--orange:#EE5A1C;--kraft:#C49A6C;--paper:#F7F2E8;--ink:#23262B}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--navy);color:var(--paper);padding:18px 16px}
+header .brand{font-family:Montserrat,system-ui,sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:.2px}
+header .brand span{color:var(--orange)}
+header p{margin:4px 0 0;opacity:.85;font-size:.9rem}
+main{max-width:880px;margin:0 auto;padding:16px}
+h1{font-family:Montserrat,system-ui,sans-serif;font-weight:800;color:var(--navy);font-size:1.5rem;margin:8px 0 4px}
+h2{font-family:Montserrat,system-ui,sans-serif;font-weight:700;color:var(--navy);font-size:1.1rem;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:#fff;border:1px solid #e4dccd;border-top:4px solid var(--kraft);border-radius:10px;padding:16px}
+label{display:block;font-weight:600;font-size:.9rem;margin:10px 0 4px;color:var(--navy)}
+input,select{width:100%;padding:10px;border:1px solid #cfc6b5;border-radius:8px;font:inherit;background:#fff}
+input:focus,select:focus{outline:2px solid var(--orange);border-color:var(--orange)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:.8rem;color:#5b5f66;margin:2px 0 0}
+.verify{display:inline-block;background:#fdebe2;color:#a33b0f;border-radius:6px;padding:2px 8px;font-size:.78rem;font-weight:600}
+table{width:100%;border-collapse:collapse}
+td{padding:8px 0;border-bottom:1px solid #eee5d6}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+tr.total td{border-bottom:none;font-size:1.15rem;color:var(--navy)}
+.neg{color:#b42318}.pos{color:#1a7f37}
+.rates[hidden]{display:none}
+.small{font-size:.8rem;color:#5b5f66}
+.live{font-size:.95rem;color:var(--navy);font-weight:600}
+footer{max-width:880px;margin:0 auto;padding:8px 16px 32px;font-size:.8rem;color:#5b5f66}
+a{color:#a33b0f}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Marco <span>Angelo</span></div>
+  <p>Las Vegas yard-sale flipper · free tools for flippers</p>
+</header>
+<main>
+  <h1>Reseller profit calculator: Whatnot &amp; eBay</h1>
+  <p class="small">See what you keep after platform fees, payment processing, shipping and costs. All math runs in your browser; nothing is sent anywhere.</p>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="in-h">
+      <h2 id="in-h">Your sale</h2>
+      <label for="platform">Platform</label>
+      <select id="platform">
+        <option value="whatnot">Whatnot</option>
+        <option value="ebay">eBay</option>
+      </select>
+      <div class="row">
+        <div><label for="price">Sale price ($)</label><input id="price" type="number" inputmode="decimal" min="0" step="0.01" value="50"></div>
+        <div><label for="shipCharged">Shipping charged to buyer ($)</label><input id="shipCharged" type="number" inputmode="decimal" min="0" step="0.01" value="0"></div>
+      </div>
+      <div class="row">
+        <div><label for="itemCost">Item cost ($)</label><input id="itemCost" type="number" inputmode="decimal" min="0" step="0.01" value="10"></div>
+        <div><label for="shipCost">Your shipping / label cost ($)</label><input id="shipCost" type="number" inputmode="decimal" min="0" step="0.01" value="7"></div>
+      </div>
+      <div class="row">
+        <div><label for="otherCost">Other costs ($)</label><input id="otherCost" type="number" inputmode="decimal" min="0" step="0.01" value="1"><p class="hint">Supplies, promo, gas, etc.</p></div>
+        <div><label for="tax">Sales tax paid by buyer ($, optional)</label><input id="tax" type="number" inputmode="decimal" min="0" step="0.01" value="0"><p class="hint">Some fees are charged on tax too.</p></div>
+      </div>
+
+      <h2 style="margin-top:18px">Fee rates <span class="verify">Verify current rates · defaults as of 2026-10-28</span></h2>
+      <div id="rates-whatnot" class="rates">
+        <div class="row">
+          <div><label for="wnComm">Commission (% of item price)</label><input id="wnComm" type="number" step="0.01" min="0" value="8"><p class="hint">US standard 8%. Lower volume tiers (down to 3%) and some categories differ. Shipping and tax are excluded.</p></div>
+          <div><label for="wnProcPct">Processing (% of buyer total)</label><input id="wnProcPct" type="number" step="0.01" min="0" value="2.9"><p class="hint">On item + shipping + tax.</p></div>
+        </div>
+        <label for="wnProcFix">Processing fixed fee ($ per order)</label><input id="wnProcFix" type="number" step="0.01" min="0" value="0.30">
+        <p class="hint">Official: <a href="https://help.whatnot.com/hc/en-us/articles/4847069165965-Whatnot-seller-fees" target="_blank" rel="noopener">Whatnot seller fees</a></p>
+      </div>
+      <div id="rates-ebay" class="rates" hidden>
+        <div class="row">
+          <div><label for="ebFvf">Final value fee (% of total)</label><input id="ebFvf" type="number" step="0.01" min="0" value="13.6"><p class="hint">Most categories. On item + shipping + tax. Some categories differ.</p></div>
+          <div><label for="ebProcPct">Payment processing (%)</label><input id="ebProcPct" type="number" step="0.01" min="0" value="0"><p class="hint">Included in the final value fee on eBay.</p></div>
+        </div>
+        <div class="row">
+          <div><label for="ebFix">Per-order fee, orders over $10 ($)</label><input id="ebFix" type="number" step="0.01" min="0" value="0.40"></div>
+          <div><label for="ebFixSmall">Per-order fee, orders $10 or less ($)</label><input id="ebFixSmall" type="number" step="0.01" min="0" value="0.30"></div>
+        </div>
+        <p class="hint">Official: <a href="https://www.ebay.com/help/selling/fees-credits-invoices/selling-fees?id=4822" target="_blank" rel="noopener">eBay selling fees</a></p>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="out-h" aria-live="polite">
+      <h2 id="out-h">Results</h2>
+      <table>
+        <tr><td>Buyer pays (item + shipping + tax)</td><td id="oTotal">–</td></tr>
+        <tr><td>Platform fees</td><td id="oPlat">–</td></tr>
+        <tr><td>Payment processing</td><td id="oProc">–</td></tr>
+        <tr><td>Net payout (includes shipping the buyer paid)</td><td id="oPayout">–</td></tr>
+        <tr><td>Your costs (item + label + other)</td><td id="oCosts">–</td></tr>
+        <tr class="total"><td>Profit</td><td id="oProfit">–</td></tr>
+        <tr class="total"><td>Margin (profit ÷ sale price + shipping charged)</td><td id="oMargin">–</td></tr>
+      </table>
+      <p class="small">Net payout = item price + shipping charged to the buyer − platform fees − processing. It can be higher than the item price when the buyer pays shipping; your label cost is subtracted in Profit. Sales tax is passed to the state and is not counted as income.</p>
+    </section>
+  </div>
+
+</main>
+<footer>
+  <p><strong>Disclaimer:</strong> Estimates only, for planning. Fees change and vary by category, account status, sales tier, promotions and country (US defaults shown). Always check the official fee pages above before pricing. Not tax, legal or financial advice.</p>
+  <p><strong>Whatnot fee tiers vary.</strong> Lower volume tiers and some categories have different rates, so check your Seller Hub for your actual rate.</p>
+  <p class="live">🎮 Catch me live on Whatnot: <a href="https://www.whatnot.com/user/marcoangelo111" target="_blank" rel="noopener">marcoangelo111</a><br>
+  <a href="https://x.com/Marcoangelo111" target="_blank" rel="noopener">X @Marcoangelo111</a> · <a href="https://www.youtube.com/@MarcoAngelo-111" target="_blank" rel="noopener">YouTube @MarcoAngelo-111</a></p>
+  <p>Made by Marco Angelo · Rates last reviewed 2026-10-28</p>
+</footer>
+<script>
+function calc(p){
+  var total=p.price+p.shipCharged+p.tax, plat=0, proc=0;
+  if(p.platform==='whatnot'){
+    plat=p.price*p.wnComm/100;
+    proc=total*p.wnProcPct/100+(total>0?p.wnProcFix:0);
+  }else{
+    plat=total*p.ebFvf/100+(total<=0?0:(total<=10?p.ebFixSmall:p.ebFix));
+    proc=total*p.ebProcPct/100;
+  }
+  var payout=p.price+p.shipCharged-plat-proc;
+  var costs=p.itemCost+p.shipCost+p.otherCost;
+  var profit=payout-costs, base=p.price+p.shipCharged;
+  return {total:total,plat:plat,proc:proc,payout:payout,costs:costs,profit:profit,margin:base>0?profit/base*100:0};
+}
+if(typeof module!=='undefined'){module.exports={calc:calc};}
+else{
+  var ids=['price','shipCharged','itemCost','shipCost','otherCost','tax','wnComm','wnProcPct','wnProcFix','ebFvf','ebProcPct','ebFix','ebFixSmall'];
+  var $=function(i){return document.getElementById(i)};
+  var money=function(n){return (n<0?'−$':'$')+Math.abs(n).toFixed(2)};
+  function run(){
+    var p={platform:$('platform').value};
+    ids.forEach(function(i){var v=parseFloat($(i).value);p[i]=isFinite(v)?v:0;});
+    $('rates-whatnot').hidden=p.platform!=='whatnot';
+    $('rates-ebay').hidden=p.platform!=='ebay';
+    var r=calc(p);
+    $('oTotal').textContent=money(r.total);
+    $('oPlat').textContent=money(r.plat);
+    $('oProc').textContent=money(r.proc);
+    $('oPayout').textContent=money(r.payout);
+    $('oCosts').textContent=money(r.costs);
+    $('oProfit').textContent=money(r.profit);
+    $('oProfit').className=r.profit<0?'neg':'pos';
+    $('oMargin').textContent=r.margin.toFixed(1)+'%';
+    $('oMargin').className=r.profit<0?'neg':'pos';
+  }
+  document.addEventListener('input',run);document.addEventListener('change',run);run();
+}
+</script>
+</body>
+</html>
